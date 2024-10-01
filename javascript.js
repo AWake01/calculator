@@ -1,4 +1,5 @@
 let currentValue = 0;
+const doc = document.getElementById("document");
 
 function add(a, b) {
     return (a + b).toFixed(3);
@@ -36,7 +37,12 @@ function operate(opporator, num1, num2) {
             return div(num1, num2);
             break;
         case 'clear':
-            clear();
+            clear();s
 
     }
 }
+
+doc.getElementById("document").addEventListener("click", (e) => {
+    let target = e.target;
+    console.log(target.id);
+});
