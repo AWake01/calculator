@@ -57,43 +57,28 @@ function parseUserInput(input) {
 
 //function operate(opporator, num1, num2) {
 function operate(operator, n1, n2) {
-    let result = 0;
-    if(!n2) {
-        result = parseFloat(n1);   //If equal pressed with single number
-        displayText = result; 
-    }
-    else
-    {
-        console.log("Opp: " + operator);
-        switch(operator)
-        {
-            case '+':
-                console.log("add");
-                return add(n1, n2);
-                break;
-            case '-':
-                console.log("sub");
-                return sub(n1, n2);
-                break;
-            case 'X':
-                console.log("multiply");
-                return mul(n1, n2);
-                break;
-            case '\u00F7':
-                console.log("divide");
-                return div(n1, n2);
-                break;   
-        }    
-    }
+    if(!n2) {return parseFloat(n1); } //If equal pressed with single number
 
-    // if(result == '' || isNaN(result.toFixed(3))) {
-    //     console.log("Not num");
-    //     const buttons = document.querySelectorAll('btn');
-    //     buttons.forEach((button) => {
-    //         button.disabled = true;
-    //     });
-    //     document.getElementById('btnClear').disabled = false;
-    // }
+    console.log("Opp: " + operator);
+    switch(operator)
+    {
+        case '+':
+            console.log("add");
+            return add(n1, n2);
+            break;
+        case '-':
+            console.log("sub");
+            return sub(n1, n2);
+            break;
+        case 'X':
+            console.log("multiply");
+            return mul(n1, n2);
+            break;
+        case '\u00F7':
+            console.log("divide");
+            return div(n1, n2);
+            break;
+    }
 }
 
 function setNumbers(oppSign) {
@@ -274,8 +259,7 @@ document.addEventListener("click", (e) => {
             break;
 
         case 'btnDelete':
-            if(displayText.slice(-1) === '.') {decimalBtn.disabled = false; }
-            displayText = displayText.slice(0,-1);          
+            displayText = displayText.slice(0,-1);
             break;
 
         default:
@@ -283,76 +267,5 @@ document.addEventListener("click", (e) => {
     }
 
     console.log("n1: " + n1 + " opp : " + opperator + " n2: " + n2);
-    //Display update
     calcDisplay.textContent = displayText;
 });
-
-//Listen for keyboard events
-document.addEventListener("keyup", (e) => { 
-    let key = e.key; 
-    let btnOption = '';
-    console.log(key);
-
-    switch(key) {
-        case '1':
-            document.getElementById("btn1").click();
-            break;
-        case '2':
-            document.getElementById("btn2").click();
-            break;
-        case '3':
-            document.getElementById("btn3").click();
-            break;
-        case '4':
-            document.getElementById("btn4").click();
-            break;
-        case '5':
-            document.getElementById("btn5").click();
-            break;
-        case '6':
-            document.getElementById("btn6").click();
-            break;
-        case '7':
-            document.getElementById("btn7").click();
-            break;
-        case '8':
-            document.getElementById("btn8").click();
-            break;
-        case '9':
-            document.getElementById("btn9").click();
-            break;
-        case '0':
-            document.getElementById("btn0").click();
-            break;
-        case '.':
-            document.getElementById("btn0").click();
-            break;
-
-        case '+':
-            document.getElementById("btnAdd").click();
-            break;
-        case '-':
-            document.getElementById("btnSubtract").click();
-            break;
-        case '*':
-            document.getElementById("btnMultiply").click();
-            break;
-        case '/':
-            document.getElementById("btnDivide").click();
-            break;
-        case '=':
-
-        case 'Enter' : //Enter
-            document.getElementById("btnEqual").click();
-            break;
-        case 'Backspace' : //Delete
-            document.getElementById("btnDelete").click();
-            break;
-        case 'Delete' : //Clear
-            document.getElementById("btnClear").click();
-            break;
-
-        default:
-            return;
-    }
-  })

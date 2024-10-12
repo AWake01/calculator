@@ -5,6 +5,26 @@
     font-style: normal;
   }
 
+@import url('https://fonts.googleapis.com/css2?family=Jersey+25&display=swap/');
+.jersey-25-regular {
+  font-family: "Jersey 25", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.jersey-10-regular {
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .micro-5-regular {
+    font-family: "Micro 5", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+
 body {
     display:flex;
     flex-direction: column;
@@ -28,15 +48,22 @@ body {
 #display{
     display: flex;
     align-items: center;
-    justify-content:flex-start;
-    padding: 5px;
+    justify-content:center;
 
     width: 500px;
     height: 50px;
     background-color:aliceblue;
 
-    font-family: tiny5;
-    font-size: 42px;
+    font-family: "Micro 5";
+    font-size: 64px;
+    text-align: center;
+}
+
+#displayText {
+  box-sizing:border-box;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
 }
 
 #buttonGrid {
@@ -71,4 +98,17 @@ body {
 
     background-color: darkgray;
     border-radius: 10px;
+    border-style: solid;
+
+    font-size: 32px;
+    font-weight: bold;
+    font-family: monospace;
 }
+
+.btnOp { background-color:bisque}
+
+.btnBlank { background-color: black}
+
+#btnClear, #btnDelete { background-color: tomato }
+
+#btnEqual { background-color:cadetblue }
