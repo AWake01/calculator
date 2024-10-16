@@ -4,7 +4,7 @@ let n2 = '';
 let nCurrent = 0;
 let opperator = "";
 
-let accumulator = "";
+let accumulator = 0;
 
 let isSecondNumber = false;
 let decimalUsed = false;
@@ -13,14 +13,18 @@ const oppSymbols = ['+','-','X','\u00F7'];
 const calcDisplay = document.getElementById("display");
 const decimalBtn = document.getElementById("btnDecimal");
 
+let resultVisible = false;
+
 disableOppButtons(true);
 disableEqualButton(true);
 
 //Functions for calculator opperations
 function add(a, b) {
-    return (parseFloat(a) + parseFloat(b)).toFixed(3);
-    //return (a + b).toFixed(3);
+    let result = parseFloat(a) + parseFloat(b);
+    if(parseInt(result)) {return result}
+    else { return result.toFixed(2)}
 }
+
 function sub(a, b) {
     return (parseFloat(a) - parseFloat(b)).toFixed(3);
 }
@@ -85,15 +89,6 @@ function operate(operator, n1, n2) {
                 break;   
         }    
     }
-
-    // if(result == '' || isNaN(result.toFixed(3))) {
-    //     console.log("Not num");
-    //     const buttons = document.querySelectorAll('btn');
-    //     buttons.forEach((button) => {
-    //         button.disabled = true;
-    //     });
-    //     document.getElementById('btnClear').disabled = false;
-    // }
 }
 
 function setNumbers(oppSign) {
@@ -110,6 +105,31 @@ function disableOppButtons(state){  //true-disabled, false-enabled
     document.getElementById("btnSubtract").disabled  = state;
     document.getElementById("btnMultiply").disabled  = state;
     document.getElementById("btnDivide").disabled  = state;
+}
+
+//Allow for all buttons except cancel to be disabled
+function disableButtons(state){  //true-disabled, false-enabled    
+    document.getElementById("btnAdd").disabled = state;
+    document.getElementById("btnSubtract").disabled  = state;
+    document.getElementById("btnMultiply").disabled  = state;
+    document.getElementById("btnDivide").disabled  = state;
+
+    document.getElementById("btn1").disabled = state;
+    document.getElementById("btn2").disabled = state;
+    document.getElementById("btn3").disabled = state;
+
+    document.getElementById("btn4").disabled = state;
+    document.getElementById("btn5").disabled = state;
+    document.getElementById("btn6").disabled = state;
+
+    document.getElementById("btn7").disabled = state;
+    document.getElementById("btn8").disabled = state;
+    document.getElementById("btn9").disabled = state;
+
+    document.getElementById("btn0").disabled = state;
+    document.getElementById("btnDecimal").disabled = state;
+    document.getElementById("btnDelete").disabled = state;
+    document.getElementById("btnEqual").disabled = state;
 }
 
 //Allow for equalButton to be disabled till an opp is selected
@@ -136,14 +156,69 @@ function setResult() {
 
 //Set opporators, preventing multiple opperators
 function setOperator (opp) {
-    if(!oppSymbols.some(x=>displayText.includes(x))) //https://stackoverflow.com/questions/76595410/determine-if-a-string-contains-any-of-an-array-of-characters
-    { 
-        opperator = opp;
-        displayText += opperator
-    }
+    // if(!oppSymbols.some(x=>displayText.includes(x))) //https://stackoverflow.com/questions/76595410/determine-if-a-string-contains-any-of-an-array-of-characters
+    // { 
+    //     opperator = opp;
+    //     displayText += opperator
+    // }
 
-    //Allow for decimal to be used for second number
-    decimalBtn.disabled = false;
+    // //Allow for decimal to be used for second number
+    // decimalBtn.disabled = false;
+}
+
+function setDisplay(n1, opp, n2) {
+    displayText = n1 + opp + n2;
+    calcDisplay.textContent = displayText;
+}
+
+function tryParseExpression(expression){
+    let isNegative = false;
+    console.log("exp1: " + expression);
+    if(expression[0] === '-') {     //If negative number, remove sign before expression is processed
+        isNegative = true;
+        expression = expression.substring(1); 
+    }
+    console.log("exp2: " + expression);
+    console.log("neg: " + isNegative);
+    if(      expression.indexOf('+') != -1) { oppIndex = expression.indexOf('+'); }             //Determine positon of opperator
+    else if (expression.indexOf('-') != -1) { oppIndex = expression.indexOf('-'); }
+    else if (expression.indexOf('X') != -1) { oppIndex = expression.indexOf('X'); } 
+    else if (expression.indexOf('\u00F7') != -1) { oppIndex = expression.indexOf('\u00F7'); }
+    else{   //If no operater, return number
+        if(parseFloat(expression)) {
+            return isNegative ? parseFloat('-' + expression) : parseFloat(expression);
+        } else { return isNegative ? parseInt('-' + expression) : parseInt(expression) }
+    }   
+
+    let n1 = expression.substring(0, oppIndex);
+    let opp = expression[oppIndex];
+    let n2 = expression.substring(oppIndex + 1);
+
+    if(isNegative) {n1 = '-' + n1; isNegative = false;}    //Replace negative sign for calculation
+
+    if(!n2) { return n1; }  //Return first number if second number is not entered
+    let result = operate(opp, n1, n2);
+
+    if(result.length > 18) {         //Limit result to 18 character display.
+        disableButtons(true); 
+        return 'ERROR: MEMORY'; }    
+    else if(!isFinite(result)) {     //Not infinate (divide by zero)
+         if(isNaN(result)){          //Is a number
+            disableButtons(true); 
+            return 'ERROR: NaN';}
+         else {                      
+            disableButtons(true); 
+            return 'ERROR: INFINITY';}
+    }
+    else { 
+        return parseFloat(result) ? parseFloat(result).toFixed(2) : parseInt(result);   //If decimal, display to two places, else display as integer 
+    }
+}
+
+//Set character on display (18 characters)
+function setCharacter(character) {
+    if(calcDisplay.textContent.length < 18) { calcDisplay.textContent += character };
+    console.log(calcDisplay.textContent.length);
 }
 
 calcDisplay.addEventListener("input", (e) => {
@@ -156,126 +231,78 @@ document.addEventListener("click", (e) => {
 
     switch(target.id) {
         case 'btnClear':
-            displayText = "";
-            n1 = "";
-            n2 = "";
-            opperator = "";
-
-            disableOppButtons(false);
-            disableEqualButton(false)
-            document.getElementById("btnDecimal").disabled = false;
-            displayText = '';
+            calcDisplay.textContent = '';
+            disableButtons(false);
             break;
         case 'btnDivide':
-            disableOppButtons(true);
-            disableEqualButton(false);
-            if(opperator) { parseUserInput(displayText) };
-            //if(n1 && n2) { setResult(); }
-            setOperator('\u00F7');
+            calcDisplay.textContent = tryParseExpression(calcDisplay.textContent);
+            opperator = '\u00F7';
+            calcDisplay.textContent += '\u00F7';
             break;
 
         case 'btn7':
-            storeNumber(7);
-            displayText += '7';
-            disableOppButtons(false);
+            setCharacter('7');
             break;
         case 'btn8':
-            storeNumber(8);
-            displayText += '8';
-            disableOppButtons(false);
+            setCharacter('8');
             break;
         case 'btn9':
-            storeNumber(9);
-            displayText += '9';
-            disableOppButtons(false);
+            setCharacter('9');
             break;
         case 'btnMultiply':
-            disableOppButtons(true);
-            disableEqualButton(false);
-            if(opperator) { parseUserInput(displayText) };
-            //if(n1 && n2) { setResult(); }
-            setOperator('X');
+            calcDisplay.textContent = tryParseExpression(calcDisplay.textContent);
+            opperator = 'X';
+            calcDisplay.textContent += 'X';
             break;
 
         case 'btn4':
-            storeNumber(4);
-            displayText += '4';
-            disableOppButtons(false);
+            setCharacter('4');
             break;
         case 'btn5':
-            storeNumber(5);
-            displayText += '5';
-            disableOppButtons(false);
+            setCharacter('5');
             break;
         case 'btn6':
-            storeNumber(6);
-            displayText += '6';
-            disableOppButtons(false);
+            setCharacter('6');
             break;
         case 'btnSubtract':
-            disableOppButtons(true);
-            disableEqualButton(false);
-            if(opperator) { parseUserInput(displayText) };
-            //if(n1 && n2) { setResult(); }
-            setOperator('-');
+            calcDisplay.textContent = tryParseExpression(calcDisplay.textContent);
+            calcDisplay.textContent += '-';
             break;
 
         case 'btn1':
-            displayText += '1';
-            storeNumber(1);
-            disableOppButtons(false);
+            setCharacter('1');
             break;
         case 'btn2':
-            displayText += '2';
-            storeNumber(2);
-            disableOppButtons(false);
+            setCharacter('2');
             break;
         case 'btn3':
-            displayText += '3';
-            storeNumber(3);
-            disableOppButtons(false);
+            setCharacter('3');
             break;
         case 'btnAdd':
-            //if(n1 && n2) { setResult(); }
-            if(opperator) { parseUserInput(displayText) };
-
-            setOperator('+');
-            //opperator = '+';
-
-            disableOppButtons(true);
-            disableEqualButton(false);
-            //displayText += opperator;
-
+            calcDisplay.textContent = tryParseExpression(calcDisplay.textContent);
+            calcDisplay.textContent += '+';
+            decimalBtn.disabled = false;
             break;
 
         case 'btn0':
-            storeNumber(0);
-            displayText += '0';
-            disableOppButtons(false);
+            setCharacter('0');
             break;
         case 'btnDecimal':
             if(!decimalUsed) {
-                displayText += '.';
+                setCharacter('.');
                 decimalBtn.disabled = true;
             } else {
                 decimalBtn.disabled = false;
             }
-            //}           
             break;
         case 'btnEqual':
-            //parseUserInput(displayText);
-
-            //setResult();
-            parseUserInput(displayText);
-            
-            decimalBtn.disabled = false;
-            disableOppButtons(false);
-            disableEqualButton(true);
+            calcDisplay.textContent = tryParseExpression(calcDisplay.textContent);
             break;
 
         case 'btnDelete':
-            if(displayText.slice(-1) === '.') {decimalBtn.disabled = false; }
-            displayText = displayText.slice(0,-1);          
+            if(calcDisplay.textContent.slice(-1) === '.') { decimalUsed = false; decimalBtn.disabled = false;}
+            console.log(calcDisplay.textContent.slice(-1));
+            calcDisplay.textContent = calcDisplay.textContent.slice(0, -1);
             break;
 
         default:
@@ -283,12 +310,10 @@ document.addEventListener("click", (e) => {
     }
 
     console.log("n1: " + n1 + " opp : " + opperator + " n2: " + n2);
-    //Display update
-    calcDisplay.textContent = displayText;
 });
 
 //Listen for keyboard events
-document.addEventListener("keyup", (e) => { 
+document.addEventListener("keyup", (e) => {
     let key = e.key; 
     let btnOption = '';
     console.log(key);
@@ -355,4 +380,4 @@ document.addEventListener("keyup", (e) => {
         default:
             return;
     }
-  })
+})

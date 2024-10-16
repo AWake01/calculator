@@ -1,0 +1,15 @@
+Odin Project > Foundations > JavaScript Basics > Calculaotr Progect
+
+> Simple calculator:
+    > Single 18 character display.
+    > Displays number,opp,number or result.
+    > Impliments add, subtract, mutiply and divide operations.
+    > Display clear implimented
+    > Error detection for not-a-number, infinity (divide by zero) and memory (result > 18 characters)
+    > Uses font 'VT323' from https://fonts.googleapis.com/css2?family=VT323&display=swap
+
+> Extra credit
+    > Handles floats to 2 decimal places
+    > Backspace to delete last character
+    > One decimal can be entered per number
+    > Keyboard shortcuts; implimented by calling relevent button click events after the keyboard keypress event is detected
